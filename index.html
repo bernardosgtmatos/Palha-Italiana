@@ -344,7 +344,6 @@
   <footer>📐 Forma fixa 20x20x3 cm | Cálculo de pedaços: floor(20 / lado)² | Custo proporcional ao volume ocupado.</footer>
 </div>
 
-<script>
   // ---------- CONFIGURAÇÕES FIXAS ----------
   const FORMA_LADO = 20;
   const FORMA_ALTURA = 3;
@@ -359,13 +358,6 @@
   // Elementos DOM
   const tbodyIngredientes = document.getElementById('ingredients-tbody');
   const dashboardBody = document.getElementById('dashboard-ingredientes-body');
-  const addBtn = document.getElementById('addIngredientBtn');
-  const custosExtrasInput = document.getElementById('custosExtras');
-  const precoVendaInput = document.getElementById('precoVendaUnitario');
-  const numReceitasInput = document.getElementById('numReceitas');
-  
-  const ladoAtualSpan = document.getElementById('ladoAtual');
-  const ladoAtualSpan2 = document.getElementById('ladoAtual2');
   const numPecasCalcSpan = document.getElementById('numPecasCalc');
   const volOcupadoSpan = document.getElementById('volOcupado');
   const proporcaoUsoSpan = document.getElementById('proporcaoUso');
@@ -686,8 +678,26 @@
     atualizarDashboard();
     if (!temSalvo) triggerSave();
   }
+  // ========== PWA: Service Worker & Instalação ==========
+  let deferredPrompt = null;
   
-  init();
-</script>
-</body>
-</html>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ Erro no SW:', err));
+    });
+  }
+  
+  // Captura o evento beforeinstallprompt para instalação manual
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log('📲 PWA pode ser instalado');
+  });
+  
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    console.log('✅ PWA instalado com sucesso!');
+  });
+  
