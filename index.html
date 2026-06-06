@@ -3,6 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<<<<<<< HEAD
+=======
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4a2c1b">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4a2c1b">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#2d1a0f">
+  
+  <!-- iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Palha Italiana">
+  <link rel="apple-touch-icon" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
+  <link rel="apple-touch-startup-image" href="icons/icon-512.png" media="(device-width: 375px) and (device-height: 812px)">
+  
+  <!-- Windows -->
+  <meta name="msapplication-TileColor" content="#4a2c1b">
+  <meta name="msapplication-TileImage" content="icons/icon-144.png">
+  
+  <!-- Geral -->
+  <meta name="application-name" content="Palha Italiana">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Calculadora de custo real por pedaço com gestão de sobra">
+  
+>>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
   <title>🍫 Palha Italiana | Custo por Pedaço (com sobra real) - Salvamento Automático</title>
   <style>
     * {
@@ -344,6 +370,13 @@
   <footer>📐 Forma fixa 20x20x3 cm | Cálculo de pedaços: floor(20 / lado)² | Custo proporcional ao volume ocupado.</footer>
 </div>
 
+<<<<<<< HEAD
+=======
+<script>
+
+
+
+>>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
   // ---------- CONFIGURAÇÕES FIXAS ----------
   const FORMA_LADO = 20;
   const FORMA_ALTURA = 3;
@@ -358,6 +391,16 @@
   // Elementos DOM
   const tbodyIngredientes = document.getElementById('ingredients-tbody');
   const dashboardBody = document.getElementById('dashboard-ingredientes-body');
+<<<<<<< HEAD
+=======
+  const addBtn = document.getElementById('addIngredientBtn');
+  const custosExtrasInput = document.getElementById('custosExtras');
+  const precoVendaInput = document.getElementById('precoVendaUnitario');
+  const numReceitasInput = document.getElementById('numReceitas');
+  
+  const ladoAtualSpan = document.getElementById('ladoAtual');
+  const ladoAtualSpan2 = document.getElementById('ladoAtual2');
+>>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
   const numPecasCalcSpan = document.getElementById('numPecasCalc');
   const volOcupadoSpan = document.getElementById('volOcupado');
   const proporcaoUsoSpan = document.getElementById('proporcaoUso');
@@ -701,3 +744,10 @@
     console.log('✅ PWA instalado com sucesso!');
   });
   
+<<<<<<< HEAD
+=======
+  init();
+</script>
+</body>
+</html>
+>>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
