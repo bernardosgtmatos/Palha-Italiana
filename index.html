@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>🍫 Palha Italiana | Custo por Pedaço (com sobra real) - Salvamento Automático</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #faf0e4 0%, #eedbcb 100%);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    .app-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      background: rgba(255, 252, 245, 0.98);
+      border-radius: 2rem;
+      box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #4a2c1b;
+      padding: 1.5rem 2rem;
+      color: #fef0da;
+      position: relative;
+    }
+    .header h1 { font-size: 1.8rem; display: flex; gap: 12px; align-items: center; }
+    .header p { margin-top: 6px; opacity: 0.85; font-size: 0.9rem; }
+    .auto-save-badge {
+      position: absolute;
+      bottom: 12px;
+      right: 24px;
+      font-size: 0.7rem;
+      background: rgba(255,255,200,0.2);
+      padding: 4px 10px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+    }
+
+    .tabs {
+      display: flex;
+      background: #e9dbce;
+      gap: 4px;
+      padding: 0 1.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.9rem 1.8rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      color: #4f351f;
+      border-radius: 2rem 2rem 0 0;
+      transition: 0.2s;
+    }
+    .tab-btn.active {
+      background: #fffaf2;
+      color: #b55a24;
+      border-bottom: 3px solid #c17b3c;
+    }
+    .tab-content {
+      display: none;
+      padding: 2rem;
+      background: #fffef8;
+      animation: fade 0.2s;
+    }
+    .tab-content.active { display: block; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .card-panel {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      margin-bottom: 2rem;
+      padding: 0.8rem 0 1rem 0;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #4f341e;
+      border-left: 5px solid #c17b3c;
+      padding-left: 1rem;
+      margin-bottom: 1rem;
+    }
+    .recipe-multiplier {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0 1rem 1.5rem 1rem;
+      padding: 0.8rem 1rem;
+      background: #fef3ea;
+      border-radius: 2rem;
+    }
+    .recipe-multiplier label {
+      font-weight: 600;
+      color: #5a3a22;
+    }
+    .recipe-multiplier input {
+      width: 90px;
+      padding: 8px 12px;
+      border: 1px solid #dbcbbd;
+      border-radius: 2rem;
+      font-size: 1rem;
+      text-align: center;
+    }
+    .ingredient-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ingredient-table th, .ingredient-table td {
+      padding: 0.7rem 0.5rem;
+      border-bottom: 1px solid #efe4d8;
+      text-align: left;
+    }
+    .ingredient-table input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #dbcbbd;
+      border-radius: 30px;
+      background: white;
+    }
+    .ingredient-table input:focus {
+      outline: none;
+      border-color: #c17b3c;
+      box-shadow: 0 0 0 2px rgba(193,123,60,0.2);
+    }
+    .readonly-cost {
+      background: #fef3e8;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .btn-icon {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 6px;
+    }
+    .add-row-btn {
+      background: #f2e2d4;
+      border: 1px dashed #b57643;
+      padding: 6px 18px;
+      border-radius: 40px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-left: 1rem;
+    }
+    .param-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      background: #fef8f0;
+      padding: 1rem 1.5rem;
+      border-radius: 1.5rem;
+      margin-top: 1rem;
+    }
+    .param-group label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: #5a3a22;
+    }
+    .param-group input {
+      padding: 8px 12px;
+      border-radius: 28px;
+      border: 1px solid #dccbbc;
+      width: 180px;
+    }
+    .dimensoes-painel {
+      background: #fef6ed;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+    .predef-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .predef-btn {
+      background: #e7d9cd;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.1s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .predef-btn:hover { background: #d6c2b0; transform: scale(0.98); }
+    .predef-btn.active-btn {
+      background: #c17b3c;
+      color: white;
+      box-shadow: 0 4px 10px rgba(193, 123, 60, 0.3);
+    }
+    .info-forma {
+      background: #f3e5d9;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .dash-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .stat-card {
+      background: #fdf5ed;
+      flex: 1;
+      min-width: 150px;
+      padding: 1rem;
+      border-radius: 1.2rem;
+      text-align: center;
+      border: 1px solid #e9d8c8;
+    }
+    .stat-card .label { font-size: 0.7rem; text-transform: uppercase; color: #8c6a47; letter-spacing: 1px; }
+    .stat-card .value { font-size: 1.6rem; font-weight: 800; color: #2f241b; }
+    .sobra-card { background: #f3e7dd; border-left: 5px solid #b47c44; }
+    hr { margin: 1rem 0; border-top: 2px dotted #e7d8cb; }
+    footer { background: #f3ede6; text-align: center; padding: 0.9rem; font-size: 0.75rem; color: #7e623e; }
+    @media (max-width: 700px) {
+      .tab-btn { padding: 0.6rem 1rem; }
+      .param-group input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1><span>🍬</span> Palha Italiana </h1>
+    <h1>real por pedaço + sobra</h1>
+    <p>Forma fixa 20x20x3 cm | Cálculo proporcional ao volume ocupado pelos pedaços inteiros</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab1">📋 Ingredientes</button>
+    <button class="tab-btn" data-tab="tab2">📐 Tamanho do Pedaço</button>
+    <button class="tab-btn" data-tab="tab3">📊 Dashboard & Lucro</button>
+  </div>
+
+  <!-- ABA 1 - INGREDIENTES -->
+  <div id="tab1" class="tab-content active">
+    <div class="card-panel">
+      <div class="section-title">🧾 Matérias-primas (quantidade por receita)</div>
+      
+      <div class="recipe-multiplier">
+        <label>📑 Número de receitas:</label>
+        <input type="number" id="numReceitas" value="1" step="1" min="1">
+        <span style="font-size: 0.85rem; color: #9b7a5a;">Multiplica todas as quantidades abaixo</span>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table class="ingredient-table" id="ingredients-table">
+          <thead><tr><th>Ingrediente</th><th>Quantidade (total)</th><th>Unidade</th><th>Preço unitário (R$)</th><th>Custo parcial</th><th></th></tr></thead>
+          <tbody id="ingredients-tbody"></tbody>
+        </table>
+      </div>
+      <button id="addIngredientBtn" class="add-row-btn">+ Adicionar ingrediente</button>
+    </div>
+
+    <div class="param-group">
+      <div><label>💰 Custos extras fixos (R$)</label><input type="number" id="custosExtras" value="0.00" step="0.5"></div>
+      <div><label>🏷️ Preço de venda por pedaço (R$)</label><input type="number" id="precoVendaUnitario" value="4.50" step="0.1"></div>
+    </div>
+  </div>
+
+  <!-- ABA 2 - DIMENSÕES DO PEDAÇO -->
+  <div id="tab2" class="tab-content">
+    <div class="section-title">📏 Defina o tamanho do seu pedaço (base quadrada)</div>
+    <div class="dimensoes-painel">
+      <div class="info-forma">
+        🧊 <strong>Forma padrão:</strong> 20 cm × 20 cm × 3 cm (altura) → Volume total = 1200 cm³
+      </div>
+      
+      <div style="margin: 20px 0 12px 0;"><strong>Opções predefinidas (clique para selecionar e calcular automaticamente):</strong></div>
+      <div class="predef-buttons">
+        <button class="predef-btn" data-lado="5" data-alt="3">📦 5 cm × 5 cm × 3 cm (16 pedaços)</button>
+        <button class="predef-btn" data-lado="6" data-alt="3">📦 6 cm × 6 cm × 3 cm (9 pedaços)</button>
+      </div>
+      
+      <div style="background: #F7EDE2; border-radius: 1rem; padding: 1rem; margin-top: 1.2rem;">
+        <div><strong>📐 Resultado para o tamanho selecionado:</strong></div>
+        <div>🔹 Dimensão do pedaço: <strong><span id="ladoAtual">—</span> cm × <span id="ladoAtual2">—</span> cm × 3 cm</strong></div>
+        <div>🔹 Número de pedaços inteiros que cabem: <strong id="numPecasCalc">0</strong></div>
+        <div>🔹 Volume ocupado pelos pedaços: <span id="volOcupado">0</span> cm³ (de 1200 cm³)</div>
+        <div>🔹 Proporção do custo usada nos pedaços: <span id="proporcaoUso">0</span>%</div>
+      </div>
+    </div>
+    <div class="card-panel" style="padding: 1rem;">
+      <p>💡 <strong>Como funciona?</strong> A forma tem 20x20 cm. Para um pedaço de lado L, cabem <code>⌊20/L⌋²</code> pedaços inteiros. O custo de produção é rateado proporcionalmente ao volume desses pedaços. A sobra (bordas) tem seu custo destacado separadamente, não afetando o preço dos pedaços vendidos.</p>
+    </div>
+  </div>
+
+  <!-- ABA 3 - DASHBOARD -->
+  <div id="tab3" class="tab-content">
+    <div class="section-title">📈 Demonstrativo financeiro (modo ativo: tamanho selecionado)</div>
+    <div style="overflow-x: auto;">
+      <table class="ingredient-table" style="width:100%">
+        <thead><tr><th>Ingrediente</th><th>Quantidade total</th><th>Preço unit.</th><th>Custo total</th></tr></thead>
+        <tbody id="dashboard-ingredientes-body"></tbody>
+      </table>
+    </div>
+
+    <div class="dash-grid">
+      <div class="stat-card"><div class="label">💰 CUSTO TOTAL DE PRODUÇÃO</div><div class="value" id="custoTotalGeral">R$ 0,00</div></div>
+      <div class="stat-card"><div class="label">🍰 PEDAÇOS PRODUZIDOS (inteiros)</div><div class="value" id="pecasUsadasNum">0</div></div>
+      <div class="stat-card"><div class="label">⚖️ CUSTO POR PEDAÇO</div><div class="value" id="custoPorPecaFinal">R$ 0,00</div></div>
+      <div class="stat-card"><div class="label">🏷️ FATURAMENTO TOTAL</div><div class="value" id="valorVendidoTotal">R$ 0,00</div></div>
+      <div class="stat-card"><div class="label">✨ LUCRO TOTAL (venda - custo pedaços)</div><div class="value" id="lucroTotalFinal">R$ 0,00</div></div>
+      <div class="stat-card"><div class="label">📈 LUCRO POR PEDAÇO</div><div class="value" id="lucroPorPecaFinal">R$ 0,00</div></div>
+      <div class="stat-card"><div class="label">📊 MARGEM (%)</div><div class="value" id="margemFinal">0%</div></div>
+    </div>
+    
+    <div class="sobra-card stat-card" style="background:#efe0d2;">
+      <div class="label">🧩 CUSTO DA SOBRA (bordas / volume não aproveitado)</div>
+      <div class="value" id="custoSobraDisplay">R$ 0,00</div>
+      <div style="font-size:0.7rem;">Este valor representa o custo da massa que não é vendida (bordas/perdas).</div>
+    </div>
+    <hr>
+    <div style="background:#FCF7F0; border-radius: 1rem; padding: 1rem;">
+      ✅ <strong>Modo de cálculo ativo:</strong> <span id="modoCalculoAtivo">🔹 Baseado no tamanho do pedaço (5x5x3 ou 6x6x3)</span><br>
+      • Clique nos botões da aba "Tamanho do Pedaço" para alterar o tamanho e atualizar automaticamente todos os valores.<br>
+      • O custo da sobra NÃO é embutido no preço dos pedaços – apenas o volume utilizado.
+    </div>
+  </div>
+  <footer>📐 Forma fixa 20x20x3 cm | Cálculo de pedaços: floor(20 / lado)² | Custo proporcional ao volume ocupado.</footer>
+</div>
+
+<script>
+  // ---------- CONFIGURAÇÕES FIXAS ----------
+  const FORMA_LADO = 20;
+  const FORMA_ALTURA = 3;
+  const VOLUME_TOTAL = FORMA_LADO * FORMA_LADO * FORMA_ALTURA;
+
+  // ---------- DADOS DOS INGREDIENTES (por receita) ----------
+  let ingredientesBase = [];
+  let nextId = 100;
+  let numReceitasAtual = 1;
+  let ladoAtivo = 5;
+  
+  // Elementos DOM
+  const tbodyIngredientes = document.getElementById('ingredients-tbody');
+  const dashboardBody = document.getElementById('dashboard-ingredientes-body');
+  const addBtn = document.getElementById('addIngredientBtn');
+  const custosExtrasInput = document.getElementById('custosExtras');
+  const precoVendaInput = document.getElementById('precoVendaUnitario');
+  const numReceitasInput = document.getElementById('numReceitas');
+  
+  const ladoAtualSpan = document.getElementById('ladoAtual');
+  const ladoAtualSpan2 = document.getElementById('ladoAtual2');
+  const numPecasCalcSpan = document.getElementById('numPecasCalc');
+  const volOcupadoSpan = document.getElementById('volOcupado');
+  const proporcaoUsoSpan = document.getElementById('proporcaoUso');
+  
+  const custoTotalGeralSpan = document.getElementById('custoTotalGeral');
+  const pecasUsadasNumSpan = document.getElementById('pecasUsadasNum');
+  const custoPorPecaFinalSpan = document.getElementById('custoPorPecaFinal');
+  const valorVendidoTotalSpan = document.getElementById('valorVendidoTotal');
+  const lucroTotalFinalSpan = document.getElementById('lucroTotalFinal');
+  const lucroPorPecaFinalSpan = document.getElementById('lucroPorPecaFinal');
+  const margemFinalSpan = document.getElementById('margemFinal');
+  const custoSobraDisplaySpan = document.getElementById('custoSobraDisplay');
+  const modoCalculoAtivoSpan = document.getElementById('modoCalculoAtivo');
+  
+  // ========== PERSISTÊNCIA ==========
+  function salvarEstado() {
+    const estado = {
+      ingredientesBase: ingredientesBase,
+      nextId: nextId,
+      numReceitasAtual: numReceitasAtual,
+      ladoAtivo: ladoAtivo,
+      custosExtras: custosExtrasInput.value,
+      precoVenda: precoVendaInput.value
+    };
+    localStorage.setItem('palhaItalianaState', JSON.stringify(estado));
+  }
+  
+  function carregarEstado() {
+    const salvo = localStorage.getItem('palhaItalianaState');
+    if (!salvo) return false;
+    try {
+      const estado = JSON.parse(salvo);
+      if (estado.ingredientesBase && Array.isArray(estado.ingredientesBase)) {
+        ingredientesBase = estado.ingredientesBase;
+        nextId = estado.nextId || 100;
+      }
+      if (estado.numReceitasAtual) numReceitasAtual = estado.numReceitasAtual;
+      if (estado.ladoAtivo) ladoAtivo = estado.ladoAtivo;
+      if (estado.custosExtras) custosExtrasInput.value = estado.custosExtras;
+      if (estado.precoVenda) precoVendaInput.value = estado.precoVenda;
+      numReceitasInput.value = numReceitasAtual;
+      return true;
+    } catch(e) { return false; }
+  }
+  
+  let saveTimeout = null;
+  function triggerSave() {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => { salvarEstado(); }, 300);
+  }
+  
+  // ========== FUNÇÕES DE CÁLCULO ==========
+  function getQuantidadeTotal(ingBase) {
+    return ingBase.quantidadePorReceita * numReceitasAtual;
+  }
+  
+  function getCustoTotalIngredientes() {
+    let total = 0;
+    for (let ing of ingredientesBase) {
+      total += getQuantidadeTotal(ing) * ing.precoUnitario;
+    }
+    return total;
+  }
+  
+  function getCustoTotalComExtras() {
+    return getCustoTotalIngredientes() + (parseFloat(custosExtrasInput.value) || 0);
+  }
+  
+  function calcularNumeroPecas(lado) {
+    const porLinha = Math.floor(FORMA_LADO / lado);
+    return porLinha * porLinha;
+  }
+  
+  function calcularModoAtual() {
+    const custoTotal = getCustoTotalComExtras();
+    const numPecas = calcularNumeroPecas(ladoAtivo);
+    const volPeca = ladoAtivo * ladoAtivo * FORMA_ALTURA;
+    const volumeUsado = numPecas * volPeca;
+    const proporcao = volumeUsado / VOLUME_TOTAL;
+    const custoProporcionalPecas = custoTotal * proporcao;
+    const custoSobra = custoTotal - custoProporcionalPecas;
+    const custoPorPeca = numPecas > 0 ? custoProporcionalPecas / numPecas : 0;
+    return { numPecas, custoProporcionalPecas, custoSobra, custoPorPeca, custoTotal };
+  }
+  
+  function atualizarPrevisaoTamanho() {
+    const numPecas = calcularNumeroPecas(ladoAtivo);
+    const volPeca = ladoAtivo * ladoAtivo * FORMA_ALTURA;
+    const volumeUsado = numPecas * volPeca;
+    const proporcao = (volumeUsado / VOLUME_TOTAL) * 100;
+    ladoAtualSpan.innerText = ladoAtivo;
+    ladoAtualSpan2.innerText = ladoAtivo;
+    numPecasCalcSpan.innerText = numPecas;
+    volOcupadoSpan.innerText = `${volumeUsado} cm³`;
+    proporcaoUsoSpan.innerText = proporcao.toFixed(1);
+  }
+  
+  function destacarBotaoAtivo() {
+    document.querySelectorAll('.predef-btn').forEach(btn => {
+      const lado = parseFloat(btn.dataset.lado);
+      if (lado === ladoAtivo) btn.classList.add('active-btn');
+      else btn.classList.remove('active-btn');
+    });
+  }
+  
+  function atualizarDashboard() {
+    // Tabela resumo
+    dashboardBody.innerHTML = '';
+    for (let ing of ingredientesBase) {
+      const row = dashboardBody.insertRow();
+      const qtdTotal = getQuantidadeTotal(ing);
+      row.insertCell(0).innerText = ing.nome || '—';
+      row.insertCell(1).innerText = `${qtdTotal} ${ing.unidade}`;
+      row.insertCell(2).innerText = `R$ ${ing.precoUnitario.toFixed(2)}`;
+      row.insertCell(3).innerText = `R$ ${(qtdTotal * ing.precoUnitario).toFixed(2)}`;
+    }
+    if(ingredientesBase.length === 0) dashboardBody.innerHTML = '<tr><td colspan="4">➕ Adicione ingredientes</td></tr>';
+    
+    const calc = calcularModoAtual();
+    const precoVenda = parseFloat(precoVendaInput.value) || 0;
+    const faturamento = precoVenda * calc.numPecas;
+    const lucroTotal = faturamento - calc.custoProporcionalPecas;
+    const lucroPorPeca = calc.numPecas > 0 ? lucroTotal / calc.numPecas : 0;
+    const margem = faturamento > 0 ? (lucroTotal / faturamento) * 100 : 0;
+    
+    custoTotalGeralSpan.innerText = `R$ ${calc.custoTotal.toFixed(2)}`;
+    pecasUsadasNumSpan.innerText = calc.numPecas;
+    custoPorPecaFinalSpan.innerText = `R$ ${calc.custoPorPeca.toFixed(2)}`;
+    valorVendidoTotalSpan.innerText = `R$ ${faturamento.toFixed(2)}`;
+    lucroTotalFinalSpan.innerText = `R$ ${lucroTotal.toFixed(2)}`;
+    lucroPorPecaFinalSpan.innerText = `R$ ${lucroPorPeca.toFixed(2)}`;
+    margemFinalSpan.innerText = `${margem.toFixed(1)}%`;
+    custoSobraDisplaySpan.innerText = `R$ ${calc.custoSobra.toFixed(2)}`;
+    modoCalculoAtivoSpan.innerText = `🔹 Pedaço ${ladoAtivo}×${ladoAtivo}×3 cm → ${calc.numPecas} unidades · ${numReceitasAtual} receita(s)`;
+  }
+  
+  // ========== CONSTRUÇÃO DA TABELA EDITÁVEL (sem recriar a cada input) ==========
+  function construirTabelaEditavel() {
+    tbodyIngredientes.innerHTML = '';
+    for (let i = 0; i < ingredientesBase.length; i++) {
+      const ing = ingredientesBase[i];
+      const row = tbodyIngredientes.insertRow();
+      
+      // Nome
+      const cellNome = row.insertCell(0);
+      const nomeInput = document.createElement('input');
+      nomeInput.value = ing.nome;
+      nomeInput.addEventListener('change', (e) => {
+        ing.nome = e.target.value;
+        atualizarDashboard();
+        triggerSave();
+      });
+      cellNome.appendChild(nomeInput);
+      
+      // Quantidade TOTAL (já multiplicada)
+      const cellQtd = row.insertCell(1);
+      const qtdInput = document.createElement('input');
+      qtdInput.type = 'number';
+      qtdInput.step = 'any';
+      qtdInput.value = getQuantidadeTotal(ing);
+      // Evento 'input' para atualizar em tempo real sem perder foco
+      qtdInput.addEventListener('input', (e) => {
+        let novoTotal = parseFloat(e.target.value);
+        if (isNaN(novoTotal)) novoTotal = 0;
+        if (numReceitasAtual > 0) {
+          ing.quantidadePorReceita = novoTotal / numReceitasAtual;
+        } else {
+          ing.quantidadePorReceita = novoTotal;
+        }
+        // Atualiza o campo de custo da linha
+        const custoSpan = row.cells[4]?.querySelector('.readonly-cost');
+        if (custoSpan) {
+          const novoCusto = getQuantidadeTotal(ing) * ing.precoUnitario;
+          custoSpan.innerText = `R$ ${novoCusto.toFixed(2)}`;
+        }
+        atualizarDashboard();
+        triggerSave();
+      });
+      cellQtd.appendChild(qtdInput);
+      
+      // Unidade
+      const cellUn = row.insertCell(2);
+      const unidInput = document.createElement('input');
+      unidInput.value = ing.unidade;
+      unidInput.addEventListener('change', (e) => {
+        ing.unidade = e.target.value;
+        atualizarDashboard();
+        triggerSave();
+      });
+      cellUn.appendChild(unidInput);
+      
+      // Preço unitário
+      const cellPreco = row.insertCell(3);
+      const precoInput = document.createElement('input');
+      precoInput.type = 'number';
+      precoInput.step = '0.01';
+      precoInput.value = ing.precoUnitario;
+      precoInput.addEventListener('input', (e) => {
+        ing.precoUnitario = parseFloat(e.target.value) || 0;
+        // Atualiza o custo da linha
+        const custoSpan = row.cells[4]?.querySelector('.readonly-cost');
+        if (custoSpan) {
+          const novoCusto = getQuantidadeTotal(ing) * ing.precoUnitario;
+          custoSpan.innerText = `R$ ${novoCusto.toFixed(2)}`;
+        }
+        atualizarDashboard();
+        triggerSave();
+      });
+      cellPreco.appendChild(precoInput);
+      
+      // Custo parcial
+      const cellCusto = row.insertCell(4);
+      const custoVal = getQuantidadeTotal(ing) * ing.precoUnitario;
+      const spanCusto = document.createElement('span');
+      spanCusto.className = 'readonly-cost';
+      spanCusto.innerText = `R$ ${custoVal.toFixed(2)}`;
+      cellCusto.appendChild(spanCusto);
+      
+      // Remover
+      const cellAction = row.insertCell(5);
+      const delBtn = document.createElement('button');
+      delBtn.innerHTML = '🗑️';
+      delBtn.className = 'btn-icon';
+      delBtn.addEventListener('click', () => {
+        ingredientesBase.splice(i, 1);
+        construirTabelaEditavel();
+        atualizarDashboard();
+        triggerSave();
+      });
+      cellAction.appendChild(delBtn);
+    }
+  }
+  
+  function adicionarIngrediente() {
+    ingredientesBase.push({
+      id: nextId++,
+      nome: "Novo ingrediente",
+      quantidadePorReceita: 1,
+      unidade: "un",
+      precoUnitario: 0.0
+    });
+    construirTabelaEditavel();
+    atualizarDashboard();
+    triggerSave();
+  }
+  
+  function aplicarNumeroReceitas() {
+    let novoNum = parseInt(numReceitasInput.value);
+    if (isNaN(novoNum) || novoNum < 1) novoNum = 1;
+    numReceitasAtual = novoNum;
+    construirTabelaEditavel(); // reconstrói para mostrar quantidades totais atualizadas
+    atualizarDashboard();
+    triggerSave();
+  }
+  
+  function aplicarLado(lado) {
+    if (lado === ladoAtivo) return;
+    ladoAtivo = lado;
+    atualizarPrevisaoTamanho();
+    destacarBotaoAtivo();
+    atualizarDashboard();
+    triggerSave();
+  }
+  
+  // ========== INICIALIZAÇÃO ==========
+  function inicializarIngredientes() {
+    if (ingredientesBase.length === 0) {
+      ingredientesBase = [
+        { id: nextId++, nome: "Creme de leite (200g)", quantidadePorReceita: 2, unidade: "cx", precoUnitario: 2.49 },
+        { id: nextId++, nome: "Leite condensado", quantidadePorReceita: 1, unidade: "lata", precoUnitario: 6.49 },
+        { id: nextId++, nome: "Biscoito Negresco", quantidadePorReceita: 1, unidade: "pacote", precoUnitario: 2.79 },
+        { id: nextId++, nome: "Leite em pó (estimado)", quantidadePorReceita: 1, unidade: "porção", precoUnitario: 5.00 }
+      ];
+    }
+  }
+  
+  function configurarBotoesPredefinidos() {
+    document.querySelectorAll('.predef-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lado = parseFloat(btn.dataset.lado);
+        if (!isNaN(lado)) aplicarLado(lado);
+      });
+    });
+  }
+  
+  function bindEventosGlobais() {
+    custosExtrasInput.addEventListener('input', () => { atualizarDashboard(); triggerSave(); });
+    precoVendaInput.addEventListener('input', () => { atualizarDashboard(); triggerSave(); });
+    numReceitasInput.addEventListener('input', aplicarNumeroReceitas);
+    addBtn.addEventListener('click', adicionarIngrediente);
+  }
+  
+  function initTabs() {
+    const btns = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        contents.forEach(c => c.classList.remove('active'));
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+        if (tabId === 'tab3') atualizarDashboard();
+        if (tabId === 'tab2') atualizarPrevisaoTamanho();
+      });
+    });
+  }
+  
+  function init() {
+    const temSalvo = carregarEstado();
+    inicializarIngredientes();
+    construirTabelaEditavel();
+    configurarBotoesPredefinidos();
+    bindEventosGlobais();
+    initTabs();
+    atualizarPrevisaoTamanho();
+    destacarBotaoAtivo();
+    atualizarDashboard();
+    if (!temSalvo) triggerSave();
+  }
+  
+  init();
+</script>
+</body>
+</html>
