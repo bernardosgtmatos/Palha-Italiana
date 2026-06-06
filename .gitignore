@@ -1,7 +1,4 @@
 node_modules/
 icons/node_modules/
-icons/generate-icons.js
-icons/package.json
-icons/package-lock.json
 .DS_Store
 *.log
