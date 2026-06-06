@@ -708,7 +708,8 @@
     atualizarDashboard();
     if (!temSalvo) triggerSave();
   }
-  // ========== PWA: Service Worker & Instalação ===  let deferredPrompt = null;
+  // ========== PWA: Service Worker & Instalação ==========
+  let deferredPrompt = null;
   
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
