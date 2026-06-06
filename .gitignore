@@ -5,3 +5,6 @@ icons/package.json
 icons/package-lock.json
 .DS_Store
 *.log
+
+# Custom agents (local apenas)
+.github/agents/
