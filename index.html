@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<<<<<<< HEAD
-=======
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4a2c1b">
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#4a2c1b">
@@ -28,7 +26,6 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="description" content="Calculadora de custo real por pedaço com gestão de sobra">
   
->>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
   <title>🍫 Palha Italiana | Custo por Pedaço (com sobra real) - Salvamento Automático</title>
   <style>
     * {
@@ -370,13 +367,10 @@
   <footer>📐 Forma fixa 20x20x3 cm | Cálculo de pedaços: floor(20 / lado)² | Custo proporcional ao volume ocupado.</footer>
 </div>
 
-<<<<<<< HEAD
-=======
 <script>
 
 
 
->>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
   // ---------- CONFIGURAÇÕES FIXAS ----------
   const FORMA_LADO = 20;
   const FORMA_ALTURA = 3;
@@ -391,8 +385,6 @@
   // Elementos DOM
   const tbodyIngredientes = document.getElementById('ingredients-tbody');
   const dashboardBody = document.getElementById('dashboard-ingredientes-body');
-<<<<<<< HEAD
-=======
   const addBtn = document.getElementById('addIngredientBtn');
   const custosExtrasInput = document.getElementById('custosExtras');
   const precoVendaInput = document.getElementById('precoVendaUnitario');
@@ -400,7 +392,6 @@
   
   const ladoAtualSpan = document.getElementById('ladoAtual');
   const ladoAtualSpan2 = document.getElementById('ladoAtual2');
->>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
   const numPecasCalcSpan = document.getElementById('numPecasCalc');
   const volOcupadoSpan = document.getElementById('volOcupado');
   const proporcaoUsoSpan = document.getElementById('proporcaoUso');
@@ -415,8 +406,7 @@
   const custoSobraDisplaySpan = document.getElementById('custoSobraDisplay');
   const modoCalculoAtivoSpan = document.getElementById('modoCalculoAtivo');
   
-  // ========== PERSISTÊNCIA ==========
-  function salvarEstado() {
+  // ========== PERSISTÊNCIA ===  function salvarEstado() {
     const estado = {
       ingredientesBase: ingredientesBase,
       nextId: nextId,
@@ -452,8 +442,7 @@
     saveTimeout = setTimeout(() => { salvarEstado(); }, 300);
   }
   
-  // ========== FUNÇÕES DE CÁLCULO ==========
-  function getQuantidadeTotal(ingBase) {
+  // ========== FUNÇÕES DE CÁLCULO ===  function getQuantidadeTotal(ingBase) {
     return ingBase.quantidadePorReceita * numReceitasAtual;
   }
   
@@ -537,8 +526,7 @@
     modoCalculoAtivoSpan.innerText = `🔹 Pedaço ${ladoAtivo}×${ladoAtivo}×3 cm → ${calc.numPecas} unidades · ${numReceitasAtual} receita(s)`;
   }
   
-  // ========== CONSTRUÇÃO DA TABELA EDITÁVEL (sem recriar a cada input) ==========
-  function construirTabelaEditavel() {
+  // ========== CONSTRUÇÃO DA TABELA EDITÁVEL (sem recriar a cada input) ===  function construirTabelaEditavel() {
     tbodyIngredientes.innerHTML = '';
     for (let i = 0; i < ingredientesBase.length; i++) {
       const ing = ingredientesBase[i];
@@ -665,8 +653,7 @@
     triggerSave();
   }
   
-  // ========== INICIALIZAÇÃO ==========
-  function inicializarIngredientes() {
+  // ========== INICIALIZAÇÃO ===  function inicializarIngredientes() {
     if (ingredientesBase.length === 0) {
       ingredientesBase = [
         { id: nextId++, nome: "Creme de leite (200g)", quantidadePorReceita: 2, unidade: "cx", precoUnitario: 2.49 },
@@ -721,8 +708,7 @@
     atualizarDashboard();
     if (!temSalvo) triggerSave();
   }
-  // ========== PWA: Service Worker & Instalação ==========
-  let deferredPrompt = null;
+  // ========== PWA: Service Worker & Instalação ===  let deferredPrompt = null;
   
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -744,10 +730,7 @@
     console.log('✅ PWA instalado com sucesso!');
   });
   
-<<<<<<< HEAD
-=======
   init();
 </script>
 </body>
 </html>
->>>>>>> ad13fee (Transforma web app em PWA com suporte offline)
